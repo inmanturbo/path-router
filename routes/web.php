@@ -33,7 +33,7 @@ if (config('path-router.active')) {
             if ($exist) {
                 return $response;
             }
-            [$exist, $response] = config('path-router.routes.'.$routeKey.'.handler')($viewPath . '/index', $routeKey);
+            [$exist, $response] = config('path-router.routes.'.$routeKey.'.handler')($viewPath.'/index', $routeKey);
             if ($exist) {
                 return $response;
             }
@@ -41,6 +41,6 @@ if (config('path-router.active')) {
         })
             ->where('path', '(.*)')
             ->middleware(config('path-router.routes.'.$routeKey.'.middleware'))
-            ->name('path-' . (string) $routeKey);
+            ->name('path-'.(string) $routeKey);
     }
 }

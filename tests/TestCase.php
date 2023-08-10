@@ -13,7 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         config(['view.paths' => [__DIR__.'/resources/views']]);
-        
+
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Inmanturbo\\PathRouter\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
