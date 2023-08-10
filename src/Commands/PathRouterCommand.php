@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Inmanturbo\PathRouter\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class PathRouterCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'path-router';
 
     public $description = 'My command';
 

@@ -16,7 +16,7 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="VendorName Test Suite">
+        <testsuite name="Inmanturbo Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -35,4 +35,7 @@
             <directory suffix=".php">./src</directory>
         </include>
     </source>
+    <php>
+    <!-- <env name="PATH_ROUTER_PREFIX" value="/"/> -->
+    </php>
 </phpunit>
