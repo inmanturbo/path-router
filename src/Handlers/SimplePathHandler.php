@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 
-class PathBasedViewResponseHandler
+class SimplePathHandler
 {
     public function __invoke($viewPath, $routeKey)
     {

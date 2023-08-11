@@ -4,43 +4,44 @@ use Illuminate\Support\Facades\Route;
 
 if (config('path-router.active')) {
 
-    foreach (config('path-router.routes') as $routeKey => $routeValue) {
+    foreach (config('path-router.routes') as $routeKey => $routeConfig) {
 
-        if (! config('path-router.routes.'.$routeKey.'.active')) {
-            continue;
-        }
-        if (! config('path-router.routes.'.$routeKey.'.handler') ||
-            ! is_callable(config('path-router.routes.'.$routeKey.'.handler'))
-        ) {
+        if (!($routeConfig['active'] ?? false) || !is_callable($routeConfig['handler'] ?? null)) {
             continue;
         }
 
-        Route::any(config('path-router.routes.'.$routeKey.'.route_prefix'), function () use ($routeKey) {
-            $viewPath = config('path-router.routes.'.$routeKey.'.root_dir').'/index';
-            [$exist, $response] = config('path-router.routes.'.$routeKey.'.handler')($viewPath, $routeKey);
+        $routePrefix = $routeConfig['route_prefix'];
+        $rootDir = $routeConfig['root_dir'];
+        $middleware = $routeConfig['middleware'];
+        $handler = $routeConfig['handler'];
+
+        Route::any($routePrefix, function () use ($routeKey, $rootDir, $handler) {
+            $viewPath = $rootDir . '/index';
+            [$exist, $response] = $handler($viewPath, $routeKey);
+            if ($exist) {
+                return $response;
+            }
+            
+            abort(404);
+        })
+            ->where('path', '(.*)')
+            ->middleware($middleware)
+            ->name($routeConfig['name'] ?? 'path-' .$routeKey);
+
+        Route::any($routePrefix . '/{path}', function () use ($routeKey, $routePrefix, $rootDir, $handler) {
+            $viewPath = str_replace($routePrefix . '/', $rootDir . '/', request()->path());
+            [$exist, $response] = $handler($viewPath . '/index', $routeKey);
+            if ($exist) {
+                return $response;
+            }
+            [$exist, $response] = $handler($viewPath, $routeKey);
             if ($exist) {
                 return $response;
             }
             abort(404);
         })
             ->where('path', '(.*)')
-            ->middleware(config('path-router.routes.'.$routeKey.'.middleware'))
-            ->name('path');
-
-        Route::any(config('path-router.routes.'.$routeKey.'.route_prefix').'/{path}', function () use ($routeKey) {
-            $viewPath = str_replace(config('path-router.routes.'.$routeKey.'.route_prefix').'/', config('path-router.routes.'.$routeKey.'.root_dir').'/', request()->path());
-            [$exist, $response] = config('path-router.routes.'.$routeKey.'.handler')($viewPath, $routeKey);
-            if ($exist) {
-                return $response;
-            }
-            [$exist, $response] = config('path-router.routes.'.$routeKey.'.handler')($viewPath . '/index', $routeKey);
-            if ($exist) {
-                return $response;
-            }
-            abort(404);
-        })
-            ->where('path', '(.*)')
-            ->middleware(config('path-router.routes.'.$routeKey.'.middleware'))
-            ->name('path-' . (string) $routeKey);
+            ->middleware($middleware)
+            ->name($routeConfig['name'] ?? 'path-' .$routeKey);
     }
 }
